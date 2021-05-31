@@ -6,63 +6,69 @@ const addDays = require("date-fns/addDays");
 (async () => {
   const { phoneNo } = await prompts([
     {
-      type: "number",
+      type: "text",
       name: "phoneNo",
       message: "Enter a phone number that will receive the OTP",
     },
   ]);
+
+  console.log(phoneNo);
   let page, browser, availableSession;
 
   const findAvailableSession = async (beneficiaries) => {
     let appointmentData;
     try {
-      appointmentData = await page.evaluate(async () => {
-        const token = sessionStorage.getItem("userToken");
+      appointmentData = await page.evaluate(
+        async (date1, date2) => {
+          const token = sessionStorage.getItem("userToken");
 
-        const responses = await Promise.all([
-          fetch(
-            `https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=294&date=${format(
-              addDays(new Date(), 1),
-              "dd-MM-yyyy"
-            )}`,
-            {
-              headers: {
-                accept: "application/json, text/plain, */*",
-                authorization: `Bearer ${token.substring(1, token.length - 1)}`,
-              },
-              body: null,
-              method: "GET",
-              mode: "cors",
-              withCredentials: true,
-            }
-          ),
-          fetch(
-            `https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=294&date=${format(
-              addDays(new Date(), 7),
-              "dd-MM-yyyy"
-            )}`,
-            {
-              headers: {
-                accept: "application/json, text/plain, */*",
-                authorization: `Bearer ${token.substring(1, token.length - 1)}`,
-              },
-              body: null,
-              method: "GET",
-              mode: "cors",
-              withCredentials: true,
-            }
-          ),
-        ]);
+          const responses = await Promise.all([
+            fetch(
+              `https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=294&date=${date1}`,
+              {
+                headers: {
+                  accept: "application/json, text/plain, */*",
+                  authorization: `Bearer ${token.substring(
+                    1,
+                    token.length - 1
+                  )}`,
+                },
+                body: null,
+                method: "GET",
+                mode: "cors",
+                withCredentials: true,
+              }
+            ),
+            fetch(
+              `https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=294&date=${date2}`,
+              {
+                headers: {
+                  accept: "application/json, text/plain, */*",
+                  authorization: `Bearer ${token.substring(
+                    1,
+                    token.length - 1
+                  )}`,
+                },
+                body: null,
+                method: "GET",
+                mode: "cors",
+                withCredentials: true,
+              }
+            ),
+          ]);
 
-        const responseArr = await Promise.all(
-          responses.map((res) => res.json())
-        );
+          const responseArr = await Promise.all(
+            responses.map((res) => res.json())
+          );
 
-        return responseArr.reduce(
-          (mergedArr, res) => [...mergedArr, ...res.centers],
-          []
-        );
-      });
+          return responseArr.reduce(
+            (mergedArr, res) => [...mergedArr, ...res.centers],
+            []
+          );
+        },
+        format(addDays(new Date(), 1), "dd-MM-yyyy"),
+        format(addDays(new Date(), 7), "dd-MM-yyyy")
+      );
     } catch (err) {
       console.log(err);
       startVaccibot();
