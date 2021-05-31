@@ -6,7 +6,7 @@ const addDays = require("date-fns/addDays");
 (async () => {
   const { phoneNo } = await prompts([
     {
-      type: "string",
+      type: "number",
       name: "phoneNo",
       message: "Enter a phone number that will receive the OTP",
     },
