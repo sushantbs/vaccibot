@@ -65,7 +65,7 @@ const addDays = require("date-fns/addDays");
       });
     } catch (err) {
       console.log(err);
-      startVacbot();
+      startVaccibot();
     }
 
     const slotData = appointmentData.reduce(
@@ -97,7 +97,7 @@ const addDays = require("date-fns/addDays");
     return availableSlots;
   };
 
-  const startVacbot = async () => {
+  const startVaccibot = async () => {
     if (browser) {
       await browser.close();
     }
@@ -192,7 +192,7 @@ const addDays = require("date-fns/addDays");
         captchaContainer.appendChild(captchaImage);
 
         const captchaText = document.createElement("input");
-        captchaText.id = "vacbot-captcha-text";
+        captchaText.id = "vaccibot-captcha-text";
         captchaContainer.appendChild(captchaText);
 
         document.body.appendChild(captchaContainer);
@@ -207,7 +207,7 @@ const addDays = require("date-fns/addDays");
     });
 
     await page.waitForFunction(
-      () => document.getElementById("vacbot-captcha-text").value.length === 5
+      () => document.getElementById("vaccibot-captcha-text").value.length === 5
     );
 
     await page.evaluate(
@@ -222,7 +222,7 @@ const addDays = require("date-fns/addDays");
             },
             body: JSON.stringify({
               ...requestBody,
-              captcha: document.getElementById("vacbot-captcha-text").value,
+              captcha: document.getElementById("vaccibot-captcha-text").value,
             }),
             method: "POST",
             mode: "cors",
@@ -241,5 +241,5 @@ const addDays = require("date-fns/addDays");
     );
   };
 
-  await startVacbot();
+  await startVaccibot();
 })();
